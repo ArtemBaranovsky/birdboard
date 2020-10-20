@@ -17,8 +17,8 @@ Route::get('/', function () {
 
 Route::get('/projects', 'ProjectsController@index');
 
-Route::post('/projects', 'ProjectsController@store');
-
+Route::get('/projects/{project}', 'ProjectsController@show');
+Route::post('/projects', 'ProjectsController@store')->middleware('auth');
 /*Route::get('/projects', function () {
     $projects = App\Project::all();
     return view('projects.index', compact('projects'));
@@ -30,3 +30,7 @@ Route::post('/projects', function () {
 // redirect
     App\Project::create(request(['title', 'description']));
 });*/
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');

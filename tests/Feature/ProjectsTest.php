@@ -10,12 +10,25 @@ class ProjectsTest extends TestCase
 {
     use WithFaker, RefreshDatabase;
 
-    /**
-     * @test
-     */
+    /** @test */
+//    public function a_project_requires_an_owner()
+    public function only_authenticated_users_can_create_projects()
+    {
+//        $this->withoutExceptionHandling();
+//        $attributes = factory('App\Project')->raw();    // falls if an owner wasn't specified
+//        $this->post('/projects', $attributes)->assertSessionHasErrors('owner');
+
+//        $attributes = factory('App\Project')->raw(['owner_id' => null]);
+//        $this->post('/projects', $attributes)->assertSessionHasErrors('owner_id');
+
+        $attributes = factory('App\Project')->raw();
+        $this->post('/projects', $attributes)->assertRedirect('login');
+    }
+
+    /** @test */
     public function a_user_can_create_a_project()
     {
-
+        $this->actingAs(factory('App\User')->create()); // create a new user and set him as authenticated
         $this->withoutExceptionHandling();
         $attributes = [
             'title' => $this->faker->sentence,
@@ -26,21 +39,32 @@ class ProjectsTest extends TestCase
         $this->get('/projects')->assertSee($attributes['title']);
     }
 
-    /**
-     * @test
-     */
+    /** @test */
     public function a_project_requires_a_title()
     {
+        $this->actingAs(factory('App\User')->create()); // create a new user and set him as authenticated
         $attributes = factory('App\Project')->raw(['title' => '']);
         $this->post('/projects', $attributes)->assertSessionHasErrors('title');
     }
 
-    /**
-     * @test
-     */
+    /** @test */
     public function a_project_requires_a_description()
     {
+        $this->actingAs(factory('App\User')->create()); // create a new user and set him as authenticated
         $attributes = factory('App\Project')->raw(['description' => '']);
         $this->post('/projects', $attributes)->assertSessionHasErrors('description');
+    }
+
+
+    /** @test **/
+    public function a_user_can_view_a_project()
+    {
+//        $this->withoutExceptionHandling();
+        $project = factory('App\Project')->create();
+//        $this->get('/projects/' . $project->id)
+//        $this->get('/projects/' . $project->slug)
+                $this->get($project->path())
+            ->assertSee($project->title)
+            ->assertSee($project->description);
     }
 }
