@@ -21,4 +21,10 @@ class ProjectsController extends Controller
         // redirect
         return redirect('/projects');
     }
+
+    public function show(Project $project)
+    {
+//        $project = Project::findOrFail(request('project'));
+        return view('projects.show', compact('project'));
+    }
 }
