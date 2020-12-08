@@ -6,14 +6,25 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class ProjectsTest extends TestCase
+class ManageProjectsTest extends TestCase
 {
     use WithFaker, RefreshDatabase;
 
-    /** @test */
+    /** @test
+     * 3 tests merged in 1
+     */
+    public function guests_cannot_manage_projects()
+    {
+        $project = factory('App\Project')->create();
+        $this->get('/projects')->assertRedirect('login');
+        $this->get('/projects/create')->assertRedirect('login');
+        $this->get($project->path())->assertRedirect('login');
+        $this->post('/projects', $project->toArray())->assertRedirect('login');
+    }
+
 //    public function a_project_requires_an_owner()
 //    public function only_authenticated_users_can_create_projects()
-    public function guests_cannot_create_projects()
+/*    public function guests_cannot_create_projects()
     {
 //        $this->withoutExceptionHandling();
 //        $attributes = factory('App\Project')->raw();    // falls if an owner wasn't specified
@@ -22,29 +33,32 @@ class ProjectsTest extends TestCase
 //        $attributes = factory('App\Project')->raw(['owner_id' => null]);
 //        $this->post('/projects', $attributes)->assertSessionHasErrors('owner_id');
 
-        $attributes = factory('App\Project')->raw();
-        $this->post('/projects', $attributes)->assertRedirect('login');
-    }
+//        $attributes = factory('App\Project')->raw();
+        $project = factory('App\Project')->create();
+        $this->post('/projects', $project->toArray())->assertRedirect('login');
+    }*/
 
-    /** @test */
+
 //    public function only_authenticated_users_can_view_projects()
-    public function guests_cannot_view_projects()
+/*    public function guests_cannot_view_projects()
     {
         $this->get('/projects')->assertRedirect('login');
-    }
+    }*/
 
-    /** @test */
-    public function guests_cannot_view_a_single_project()
+/*    public function guests_cannot_view_a_single_project()
     {
         $project  = factory('App\Project')->create();
 		$this->get($project->path())->assertRedirect('login');
-    }
+    }*/
 
     /** @test */
     public function a_user_can_create_a_project()
     {
         $this->actingAs(factory('App\User')->create()); // create a new user and set him as authenticated
         $this->withoutExceptionHandling();
+
+        $this->get('/projects/create')->assertStatus(200);  // at the very least I expect that to be a page that loads
+
         $attributes = [
             'title' => $this->faker->sentence,
             'description' => $this->faker->paragraph

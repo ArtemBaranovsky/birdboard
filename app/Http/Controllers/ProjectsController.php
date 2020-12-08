@@ -44,4 +44,9 @@ class ProjectsController extends Controller
         }
         return view('projects.show', compact('project'));
     }
+
+    public function create()
+    {
+        return view('projects.create');
+    }
 }
