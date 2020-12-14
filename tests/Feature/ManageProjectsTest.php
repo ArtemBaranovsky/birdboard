@@ -54,7 +54,8 @@ class ManageProjectsTest extends TestCase
     /** @test */
     public function a_user_can_create_a_project()
     {
-        $this->actingAs(factory('App\User')->create()); // create a new user and set him as authenticated
+        $this->signIn();    // alias for $this->actingAs(factory('App\User')->create());
+//        $this->actingAs(factory('App\User')->create()); // create a new user and set him as authenticated
         $this->withoutExceptionHandling();
 
         $this->get('/projects/create')->assertStatus(200);  // at the very least I expect that to be a page that loads
@@ -71,7 +72,7 @@ class ManageProjectsTest extends TestCase
     /** @test */
     public function a_project_requires_a_title()
     {
-        $this->actingAs(factory('App\User')->create()); // create a new user and set him as authenticated
+        $this->signIn(); // create a new user and set him as authenticated
         $attributes = factory('App\Project')->raw(['title' => '']);
         $this->post('/projects', $attributes)->assertSessionHasErrors('title');
     }
@@ -79,7 +80,7 @@ class ManageProjectsTest extends TestCase
     /** @test */
     public function a_project_requires_a_description()
     {
-        $this->actingAs(factory('App\User')->create()); // create a new user and set him as authenticated
+        $this->signIn(); // create a new user and set him as authenticated
         $attributes = factory('App\Project')->raw(['description' => '']);
         $this->post('/projects', $attributes)->assertSessionHasErrors('description');
     }
@@ -89,8 +90,9 @@ class ManageProjectsTest extends TestCase
 //    public function a_user_can_view_a_project()
     public function a_user_can_view_their_project()
     {
+        $this->signIn();
         $this->withoutExceptionHandling();
-        $this->be(factory('App\User')->create());
+//        $this->be(factory('App\User')->create());
 //        $project = factory('App\Project')->create();
         $project = factory('App\Project')->create(['owner_id' => auth()->id()]);
 //        $this->get('/projects/' . $project->id)
